@@ -6,7 +6,31 @@ class HTMLNode:
         self.props = props
 
     def to_html(self):
-        raise NotImplementedError
+        # If tag is None, prefer value, then children, else empty string
+        if self.tag is None:
+            if self.value is not None:
+                return self.value
+
+            if self.children is not None:
+                children_html = ""
+                for child in self.children:
+                    children_html += child.to_html()
+                return children_html
+
+            return ""
+
+        # tag is present — render with either children or value
+        props_html = self.props_to_html()
+
+        if self.children is not None:
+            children_html = ""
+            for child in self.children:
+                children_html += child.to_html()
+            return f"<{self.tag}{props_html}>{children_html}</{self.tag}>"
+
+        # no children
+        value = self.value if self.value is not None else ""
+        return f"<{self.tag}{props_html}>{value}</{self.tag}>"
 
     def props_to_html(self):
 
